@@ -1,0 +1,110 @@
+<div *ngIf="machines | async as machinesList">
+  <p-table #machinesTable [value]="machinesList" sortMode="multiple" [paginator]="true" [rows]="10"
+           [showCurrentPageReport]="true"
+           responsiveLayout="stack"
+           currentPageReportTemplate="{last} of {totalRecords} entries"
+           [rowsPerPageOptions]="[10,25,50]"
+           [globalFilterFields]="['serial_number']">>
+    <ng-template pTemplate="caption">
+      <div
+        class="flex-column-reverse lg:flex-row flex align-items-center justify-content-between">
+        <div class="flex align-items-center">
+          <span class="hidden md:block">Fast Filters:</span>
+          <p-toggleButton [(ngModel)]="allExpired" [onLabel]="'All Expired '+ count" offLabel="All Expired"
+                          (onChange)="onAllExpired()"></p-toggleButton>
+          <p-toggleButton [(ngModel)]="contractExpired" [onLabel]="'Contract Expired ' + count"
+                          offLabel="Contract Expired"
+                          (onChange)="onContractExpired()"></p-toggleButton>
+          <p-toggleButton [(ngModel)]="warrantyExpired" [onLabel]="'Warranty Expired '+ count "
+                          offLabel="Warranty Expired"
+                          (onChange)="onWarrantyExpired()"></p-toggleButton>
+        </div>
+        <div class="py-2 lg:py-0 flex align-items-center w-full md:w-full lg:w-fit">
+        <span class="p-input-icon-left ml-auto w-full md:w-full lg:w-fit">
+                    <i class="pi pi-search"></i>
+                    <input class="w-full" pInputText type="text"
+                           (input)="machinesTable.filterGlobal($event.target['value'], 'contains')"
+                           placeholder="Search serial number"/>
+        </span>
+          <span class="lg:hidden"><i class="pi pi-qrcode mx-2 cursor-pointer hover:text-red-200"
+                                     style="font-size: 2rem"></i></span>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="customer">Customer
+          <p-sortIcon field="customer"></p-sortIcon>
+        </th>
+        <th pSortableColumn="asset_type">Type
+          <p-sortIcon field="asset_type"></p-sortIcon>
+        </th>
+        <th pSortableColumn="serial_number">S. number
+          <p-sortIcon field="serial_number"></p-sortIcon>
+        </th>
+        <th pSortableColumn="service_contract">Ser. contract
+          <p-sortIcon field="service_contract"></p-sortIcon>
+        </th>
+        <th pSortableColumn="warranty">Warranty
+          <p-sortIcon field="warranty"></p-sortIcon>
+        </th>
+      </tr>
+      <tr>
+        <th>
+          <p-columnFilter type="text" field="customer"></p-columnFilter>
+        </th>
+        <th>
+          <p-columnFilter type="text" field="asset_type"></p-columnFilter>
+        </th>
+        <th>
+          <p-columnFilter type="text" field="serial_number"></p-columnFilter>
+        </th>
+        <th>
+          <p-columnFilter field="service_contract" matchMode="equals" [showMenu]="false">
+            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+              <p-dropdown [ngModel]="value" [options]="statuses" optionLabel="label" optionValue="value"
+                          (onChange)="filter($event.value)"
+                          placeholder="Any"
+                          [showClear]="true">
+                <ng-template let-option pTemplate="item">
+                  <span
+                    [class]="option.value ? 'bg-green-200' : 'bg-red-300'"
+                    class="py-1 px-2 uppercase font-bold">{{isExpired(option.value)}}</span>
+                </ng-template>
+              </p-dropdown>
+            </ng-template>
+          </p-columnFilter>
+        </th>
+        <th>
+          <p-columnFilter field="warranty" matchMode="equals" [showMenu]="false">
+            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+              <p-dropdown [ngModel]="value" [options]="statuses" optionLabel="label" optionValue="value"
+                          (onChange)="filter($event.value)"
+                          placeholder="Any"
+                          [showClear]="true">
+                <ng-template let-option pTemplate="item">
+                  <span
+                    [class]="option.value ? 'bg-green-200' : 'bg-red-300'"
+                    class="py-1 px-2 uppercase font-bold">{{isExpired(option.value)}}</span>
+                </ng-template>
+              </p-dropdown>
+            </ng-template>
+          </p-columnFilter>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-machine>
+      <tr [class]="!machine.service_contract && !machine.warranty ? 'bg-red-50' : ''">
+        <td><span class="p-column-title font-bold">Customer</span>{{machine.customer}}</td>
+        <td><span class="p-column-title font-bold">Type</span>{{machine.asset_type}}</td>
+        <td><span class="p-column-title font-bold">S. number</span>{{machine.serial_number}}</td>
+        <td class="text-center"><span class="p-column-title font-bold">Ser. contract</span><span
+          [class]="machine.service_contract ? 'bg-green-200' : 'bg-red-300'"
+          class="py-1 px-2 uppercase font-bold">{{isExpired(machine.service_contract)}}</span></td>
+        <td class="text-center"><span class="p-column-title font-bold">Warranty</span><span
+          [class]="machine.warranty ? 'bg-green-200' : 'bg-red-300'"
+          class="py-1 px-2 uppercase font-bold">{{isExpired(machine.warranty)}}</span></td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
