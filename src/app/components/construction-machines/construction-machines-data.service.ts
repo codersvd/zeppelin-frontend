@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {map, Observable, of, pipe, tap} from "rxjs";
+import {map, Observable, of, pipe, tap, UnaryFunction} from "rxjs";
 import {IConstructionMachines} from "./construction-machines.interface";
 import data from "@mocks/machine_data.json";
 import {IOptions} from "@components/construction-machines/options.interface";
@@ -19,9 +19,8 @@ export class ConstructionMachinesDataService {
   }
 
   onExpiredFilter(options: IOptions): Observable<IConstructionMachines[]> {
-    console.log(options);
     return this.getData().pipe(
-      map(results => {
+      map((results: IConstructionMachines[]) => {
         if (options.warranty !== null || options.service_contract !== null) {
           return results.filter(data => {
             if (options.warranty !== null && options.service_contract !== null) {
@@ -38,7 +37,7 @@ export class ConstructionMachinesDataService {
     );
   }
 
-  changeCount(){
+  changeCount(): UnaryFunction<any, any>{
     return pipe(
       tap((data: IConstructionMachines[]) => {
         this.count = data.length;

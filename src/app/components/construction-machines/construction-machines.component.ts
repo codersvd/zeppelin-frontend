@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Observable} from "rxjs";
 import {IConstructionMachines} from "./construction-machines.interface";
 import {ConstructionMachinesDataService} from "./construction-machines-data.service";
@@ -8,10 +8,11 @@ import {IOptions} from "@components/construction-machines/options.interface";
   selector: 'app-construction-machines',
   templateUrl: './construction-machines.component.html',
   styleUrls: ['./construction-machines.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ConstructionMachinesComponent implements OnInit {
 
-  machines!: Observable<IConstructionMachines[]>;
+  machines$!: Observable<IConstructionMachines[]>;
   readonly VALID = "valid";
   readonly EXPIRED = "expired";
   allExpired = false;
@@ -23,12 +24,12 @@ export class ConstructionMachinesComponent implements OnInit {
   constructor(private constructionMachinesDataService: ConstructionMachinesDataService) {
   }
 
-  get count() {
+  get count(): number {
     return this.constructionMachinesDataService.count;
   }
 
   ngOnInit(): void {
-    this.machines = this.constructionMachinesDataService.getData().pipe(
+    this.machines$ = this.constructionMachinesDataService.getData().pipe(
       this.constructionMachinesDataService.changeCount()
     );
 
@@ -42,17 +43,17 @@ export class ConstructionMachinesComponent implements OnInit {
     return status ? this.VALID : this.EXPIRED;
   }
 
-  onAllExpired() {
+  onAllExpired(): void {
     this.contractExpired = false;
     this.warrantyExpired = false;
     const options: IOptions = {
       service_contract: this.allExpired ? false : null,
       warranty: this.allExpired ? false : null
     }
-    this.machines = this.constructionMachinesDataService.onExpiredFilter(options);
+    this.machines$ = this.constructionMachinesDataService.onExpiredFilter(options);
   }
 
-  onContractExpired() {
+  onContractExpired(): void  {
     this.allExpired = false;
     this.warrantyExpired = false;
     const options: IOptions = {
@@ -60,10 +61,10 @@ export class ConstructionMachinesComponent implements OnInit {
       warranty: null
     }
 
-    this.machines = this.constructionMachinesDataService.onExpiredFilter(options);
+    this.machines$ = this.constructionMachinesDataService.onExpiredFilter(options);
   }
 
-  onWarrantyExpired() {
+  onWarrantyExpired(): void  {
     this.allExpired = false;
     this.contractExpired = false;
     const options: IOptions = {
@@ -71,6 +72,6 @@ export class ConstructionMachinesComponent implements OnInit {
       warranty: this.warrantyExpired ? false : null
     }
 
-    this.machines = this.constructionMachinesDataService.onExpiredFilter(options);
+    this.machines$ = this.constructionMachinesDataService.onExpiredFilter(options);
   }
 }

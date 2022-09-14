@@ -1,23 +1,25 @@
-<div *ngIf="machines | async as machinesList">
-  <p-table #machinesTable [value]="machinesList" sortMode="multiple" [paginator]="true" [rows]="10"
+<div *ngIf="machines$ | async as machines">
+  <p-table #machinesTable [value]="machines" sortMode="multiple" [paginator]="true" [rows]="10"
            [showCurrentPageReport]="true"
            responsiveLayout="stack"
            currentPageReportTemplate="{last} of {totalRecords} entries"
            [rowsPerPageOptions]="[10,25,50]"
-           [globalFilterFields]="['serial_number']">>
+           [globalFilterFields]="['serial_number']">
+
+    >
     <ng-template pTemplate="caption">
       <div
         class="flex-column-reverse lg:flex-row flex align-items-center justify-content-between">
         <div class="flex align-items-center">
-          <span class="hidden md:block">Fast Filters:</span>
+          <span class="hidden md:block">Quick Filters:</span>
           <p-toggleButton [(ngModel)]="allExpired" [onLabel]="'All Expired '+ count" offLabel="All Expired"
-                          (onChange)="onAllExpired()"></p-toggleButton>
+                          (onChange)="onAllExpired()" class="px-1"></p-toggleButton>
           <p-toggleButton [(ngModel)]="contractExpired" [onLabel]="'Contract Expired ' + count"
                           offLabel="Contract Expired"
-                          (onChange)="onContractExpired()"></p-toggleButton>
+                          (onChange)="onContractExpired()" class="px-1"></p-toggleButton>
           <p-toggleButton [(ngModel)]="warrantyExpired" [onLabel]="'Warranty Expired '+ count "
                           offLabel="Warranty Expired"
-                          (onChange)="onWarrantyExpired()"></p-toggleButton>
+                          (onChange)="onWarrantyExpired()" class="px-1"></p-toggleButton>
         </div>
         <div class="py-2 lg:py-0 flex align-items-center w-full md:w-full lg:w-fit">
         <span class="p-input-icon-left ml-auto w-full md:w-full lg:w-fit">
@@ -104,6 +106,13 @@
         <td class="text-center"><span class="p-column-title font-bold">Warranty</span><span
           [class]="machine.warranty ? 'bg-green-200' : 'bg-red-300'"
           class="py-1 px-2 uppercase font-bold">{{isExpired(machine.warranty)}}</span></td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+        <td colspan="5" class="text-center">
+          No records found
+        </td>
       </tr>
     </ng-template>
   </p-table>
